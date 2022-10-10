@@ -1,1 +1,4 @@
 *.docx
+*.o
+*.out
+disks_test
