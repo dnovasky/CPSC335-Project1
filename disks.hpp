@@ -112,7 +112,7 @@ public:
   // Return true when this disk_state is fully sorted, with all light disks on
   // the left (low indices) and all dark disks on the right (high indices).
   bool is_sorted() const {
-    for (size_t i = 0; i < total_count(); i++){
+    for (size_t i = 0; i < total_count()/2; i++){
       if (_colors[i] == DISK_DARK){
         return false;
       }
@@ -149,9 +149,26 @@ public:
 // Algorithm that sorts disks using the alternate algorithm.
 sorted_disks sort_alternate(const disk_state& before) {
   disk_state state = before;
-	int swaps = 0;                                                                      //record # of step swap
+  size_t count = state.total_count();
+	int swaps = 0;                                        //record # of step swap
 
+  for (size_t i = 0; i < count+1; i++){
+    size_t start_offset = 0;
+    size_t end_offset = 1;
 
+    if (i % 2 == 1) {
+      start_offset++;
+      end_offset++;
+    }
+
+    for (size_t j = start_offset; j < count-end_offset; j+=2){
+      if(state.get(j) == DISK_LIGHT) continue;
+      if(state.get(j+1)== DISK_LIGHT){
+        state.swap(j);
+        swaps++;
+      }
+    }
+  }
   return sorted_disks(disk_state(state), swaps);
 }
 
@@ -159,7 +176,34 @@ sorted_disks sort_alternate(const disk_state& before) {
 // Algorithm that sorts disks using the lawnmower algorithm.
 sorted_disks sort_lawnmower(const disk_state& before) {
   disk_state state = before;
+  size_t count = state.total_count();
   int swaps = 0;
+
+  for (size_t i = 0; i < count/2; i++){
+    size_t idx = 0;
+    while (idx < count-1){
+      if(state.get(idx) == DISK_LIGHT){
+
+      }else{
+        if(state.get(idx+1)== DISK_LIGHT){
+        state.swap(idx);
+        swaps++;
+        }
+      }
+      idx++;
+    }
+    while (idx > 0){
+      if(state.get(idx) == DISK_DARK){
+
+      }else{
+        if(state.get(idx-1)== DISK_DARK){
+        state.swap(idx-1);
+        swaps++;
+        }
+      }
+      idx--;
+    }
+  }
 
   return sorted_disks(disk_state(state), swaps);
 }
